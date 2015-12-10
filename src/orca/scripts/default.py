@@ -55,6 +55,8 @@ import orca.settings as settings
 import orca.settings_manager as settings_manager
 import orca.speech as speech
 import orca.speechserver as speechserver
+import orca.sound as sound
+import orca.sound_generator as sound_generator
 import orca.mouse_review as mouse_review
 import orca.notification_messages as notification_messages
 
@@ -130,6 +132,9 @@ class Script(script.Script):
         if app:
             app.setCacheMask(
                 pyatspi.cache.DEFAULT ^ pyatspi.cache.CHILDREN ^ pyatspi.cache.NAME)
+
+        self.sound = sound.Sound()
+        self.soundGenerator = sound_generator.SoundGenerator()
 
     def setupInputEventHandlers(self):
         """Defines InputEventHandler fields for this script that can be
@@ -2865,6 +2870,14 @@ class Script(script.Script):
         self.updateBraille(obj, isProgressBarUpdate=isProgressBarUpdate)
         speech.speak(self.speechGenerator.generateSpeech(
             obj, alreadyFocused=True, isProgressBarUpdate=isProgressBarUpdate))
+
+        if self.soundGenerator.isProgressBarBeepEnabled() and isProgressBarUpdate:
+            valueAsPercent = self.utilities.getValueAsPercent(obj)
+            self.sound.playSimpleTone(
+              self.soundGenerator.getDurationForPercentage(valueAsPercent), \
+              self.soundGenerator.getFreqForPercentage(valueAsPercent), \
+              self.soundGenerator.getVolumeFactorForPercentage(valueAsPercent) \
+              )
 
     def onWindowActivated(self, event):
         """Called whenever a toplevel window is activated.

@@ -122,7 +122,9 @@ userCustomizableSettings = [
     "caretNavTriggersFocusMode",
     "layoutMode",
     "rewindAndFastForwardInSayAll",
-    "structNavInSayAll"
+    "structNavInSayAll",
+    "enableSound",
+    "soundVolume"
 ]
 
 GENERAL_KEYBOARD_LAYOUT_DESKTOP = 1
@@ -243,6 +245,10 @@ brailleVerbosityLevel          = VERBOSITY_LEVEL_VERBOSE
 brailleAlignmentStyle          = BRAILLE_ALIGN_BY_EDGE
 brailleAlignmentMargin         = 3
 brailleMaximumJump             = 8
+
+# Sound
+enableSound                    = True
+soundVolume                    = 0.5
 
 # Keyboard and Echo
 keyboardLayout               = GENERAL_KEYBOARD_LAYOUT_DESKTOP

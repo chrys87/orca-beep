@@ -8,6 +8,7 @@ __date__      = "$Date$"
 __license__   = "LGPL"
 
 import orca.settings_manager as settings_manager
+import orca.debug as debug
 
 try:
     import gi

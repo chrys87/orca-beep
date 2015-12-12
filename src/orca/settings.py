@@ -124,7 +124,9 @@ userCustomizableSettings = [
     "rewindAndFastForwardInSayAll",
     "structNavInSayAll",
     "enableSound",
-    "soundVolume"
+    "soundVolume",
+    "enableSoundIcons",
+    "soundIcons"
 ]
 
 GENERAL_KEYBOARD_LAYOUT_DESKTOP = 1
@@ -239,7 +241,7 @@ brailleContractionTable        = ''
 disableBrailleEOL              = False
 brailleRolenameStyle           = BRAILLE_ROLENAME_STYLE_LONG
 brailleSelectorIndicator       = BRAILLE_UNDERLINE_BOTH
-brailleLinkIndicator           = BRAILLE_UNDERLINE_BOTH
+braisoundVolumelleLinkIndicator           = BRAILLE_UNDERLINE_BOTH
 textAttributesBrailleIndicator = BRAILLE_UNDERLINE_NONE
 brailleVerbosityLevel          = VERBOSITY_LEVEL_VERBOSE
 brailleAlignmentStyle          = BRAILLE_ALIGN_BY_EDGE
@@ -248,7 +250,28 @@ brailleMaximumJump             = 8
 
 # Sound
 enableSound                    = True
-soundVolume                    = 0.5
+soundVolume                    = 0.1
+enableSoundIcons               = True
+
+#Sound Icons
+soundIcons = {
+  str(int(pyatspi.ROLE_CHECK_BOX)) + '-' + str(int(pyatspi.state.STATE_CHECKED)):[{'duration':0.05, 'frequence':500, 'volumeFactor':0.5, 'wave':2},
+  {'duration':0.1, 'frequence':900,'volumeFactor':0.5, 'wave':2}],
+  str(int(pyatspi.ROLE_CHECK_BOX)):[{'duration':0.05, 'frequence':500, 'volumeFactor':0.5, 'wave':2},
+  {'duration':0.1, 'frequence':300,'volumeFactor':0.5, 'wave':2}] ,
+  str(int(pyatspi.ROLE_PUSH_BUTTON)):[{'duration':0.1, 'frequence':880, 'volumeFactor':1, 'wave':3}],
+  str(int(pyatspi.ROLE_RADIO_BUTTON)):[{'duration':0.05, 'frequence':500, 'volumeFactor':1, 'wave':0},
+  {'duration':0.1, 'frequence':300,'volumeFactor':1, 'wave':0}],
+  str(int(pyatspi.ROLE_RADIO_BUTTON)) + '-' +str(int(pyatspi.STATE_CHECKED)):[{'duration':0.05, 'frequence':500, 'volumeFactor':1, 'wave':0},
+  {'duration':0.1, 'frequence':900,'volumeFactor':1, 'wave':0}],
+  str(int(pyatspi.ROLE_COMBO_BOX)):[{'duration':0.1, 'frequence':418, 'volumeFactor':1, 'wave':0},
+  {'duration':0.1, 'frequence':460, 'volumeFactor':1, 'wave':0},
+  {'duration':0.1, 'frequence':500, 'volumeFactor':1, 'wave':0}],
+  str(int(pyatspi.ROLE_TEXT)):[{'duration':0.1, 'frequence':420, 'volumeFactor':1, 'wave':5}],
+  str(int(pyatspi.ROLE_LINK)):[{'duration':0.05, 'frequence':900, 'volumeFactor':0.6, 'wave':3},
+  {'duration':0.05, 'frequence':1200, 'volumeFactor':0.6, 'wave':1},
+  {'duration':0.05, 'frequence':1500, 'volumeFactor':0.6, 'wave':0}]
+}
 
 # Keyboard and Echo
 keyboardLayout               = GENERAL_KEYBOARD_LAYOUT_DESKTOP

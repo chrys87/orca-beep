@@ -1443,7 +1443,9 @@ class OrcaSetupGUI(orca_gtkbuilder.GtkBuilderWrapper):
             prefs.get("brailleProgressBarUpdates", settings.brailleProgressBarUpdates))
         self.get_widget("beepProgressBarUpdatesCheckButton").set_active(
             prefs.get("beepProgressBarUpdates", settings.beepProgressBarUpdates))
-
+        self.get_widget("enableSoundIconsCheckButton").set_active(
+            prefs.get("enableSoundIcons", settings.enableSoundIcons))
+            
         interval = prefs["progressBarUpdateInterval"]
         self.get_widget("progressBarUpdateIntervalSpinButton").set_value(interval)
 

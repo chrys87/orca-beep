@@ -36,6 +36,8 @@ from . import messages
 from . import object_properties
 from . import settings
 from . import settings_manager
+from . import sound
+from . import sound_generator
 from . import text_attribute_names
 from . import acss
 
@@ -92,6 +94,8 @@ class SpeechGenerator(generator.Generator):
 
     def __init__(self, script):
         generator.Generator.__init__(self, script, "speech")
+        self.sound = sound.Sound()
+        self.soundGenerator = sound_generator.SoundGenerator()
 
     def _getACSS(self, obj, string):
         if obj.getRole() == pyatspi.ROLE_LINK:
@@ -376,6 +380,11 @@ class SpeechGenerator(generator.Generator):
         - obj: an Accessible object
         - role: an optional pyatspi role to use instead
         """
+        if _settingsManager.getSetting('enableSoundIcons'):
+            hasSoundIcon, ToneSequence = self.soundGenerator.getSoundIconToneSequence(obj, obj.getRole())
+            if hasSoundIcon:
+                self.sound.playToneSequence(ToneSequence)
+                return ''
 
         if not isinstance(role, pyatspi.Role):
             try:
@@ -422,7 +431,11 @@ class SpeechGenerator(generator.Generator):
         """
         if _settingsManager.getSetting('onlySpeakDisplayedText'):
             return []
-
+        if _settingsManager.getSetting('enableSoundIcons'):
+            hasSoundIcon, ToneSequence = self.soundGenerator.getSoundIconToneSequence(obj, obj.getRole())
+            if hasSoundIcon:
+                self.sound.playToneSequence(ToneSequence)
+                return []
         acss = self.voice(STATE)
         result = generator.Generator._generateCheckedState(self, obj, **args)
         if result:
@@ -486,7 +499,10 @@ class SpeechGenerator(generator.Generator):
         """
         if _settingsManager.getSetting('onlySpeakDisplayedText'):
             return []
-
+        if _settingsManager.getSetting('enableSoundIcons'):
+            hasSoundIcon = self.soundGenerator.getSoundIconToneSequence(obj, obj.getRole())
+            if hasSoundIcon:
+                return []
         acss = self.voice(STATE)
         result = generator.Generator._generateRadioState(self, obj, **args)
         if result:

@@ -47,6 +47,8 @@ from orca import settings
 from orca import settings_manager
 from orca import speech
 from orca import speechserver
+from orca import sound
+from orca import sound_generator
 from orca import structural_navigation
 from orca.acss import ACSS
 from orca.scripts import default
@@ -99,6 +101,8 @@ class Script(default.Script):
         self._autoFocusModeStructNavCheckButton = None
         self._autoFocusModeCaretNavCheckButton = None
         self._layoutModeCheckButton = None
+        self.sound = sound.Sound()
+        self.soundGenerator = sound_generator.SoundGenerator()
 
     def deactivate(self):
         """Called when this script is deactivated."""
@@ -953,10 +957,19 @@ class Script(default.Script):
                 self.utilities.setCaretContext(obj.parent, -1)
             elif parentRole == pyatspi.ROLE_MENU:
                 self.utilities.setCaretContext(obj.parent.parent, -1)
-
-            self.presentMessage(messages.MODE_BROWSE)
+        if _settingsManager.getSetting('enableSoundIcons'):
+            hasSoundIcon, ToneSequence = self.soundGenerator.getSoundIconToneSequence(None, 'MODE_BROWSE')
+            if hasSoundIcon:
+                self.sound.playToneSequence(ToneSequence)
+            else:
+                self.presentMessage(messages.MODE_BROWSE)
         else:
-            self.presentMessage(messages.MODE_FOCUS)
+            if _settingsManager.getSetting('enableSoundIcons'):
+                hasSoundIcon, ToneSequence = self.soundGenerator.getSoundIconToneSequence(None, 'MODE_FOCUS')
+                if hasSoundIcon:
+                    self.sound.playToneSequence(ToneSequence)
+                else:
+                    self.presentMessage(messages.MODE_FOCUS)
         self._inFocusMode = not self._inFocusMode
         self._focusModeIsSticky = False
 

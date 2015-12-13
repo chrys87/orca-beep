@@ -35,24 +35,23 @@ class SoundGenerator():
     def isProgressBarBeepEnabled(self):
         return (_settingsManager.getSetting('beepProgressBarUpdates'))
 
-    def getSoundIconToneSequence(self, obj, role):
-        if not role:
-            return False, []
+    def getSoundIconToneSequence(self, obj, soundIconName = ''):
+        '''
+        obj = accessible object, could be None if soundIconName is set
+        soundIconName = could be a fix name for an soundIcon (for non widget soundIcons
+        return1 True = soundIcon found; False = no soundIcon found
+        return2 the soundsequence to play with sound.playToneSequence(returnvalue) 
+        or [] ( if no soundIcon is found)
+        '''
         soundIcons = _settingsManager.getSetting('soundIcons')
-#        soundIcons = {\
-#          pyatspi.ROLE_CHECK_BOX:[{'duration':0.1, 'frequence':360, 'volumeFactor':1, 'wave':2}] ,\
-#          pyatspi.ROLE_PUSH_BUTTON:[{'duration':0.1, 'frequence':880, 'volumeFactor':1, 'wave':3}], \
-#          pyatspi.ROLE_RADIO_BUTTON:[{'duration':0.1, 'frequence':420, 'volumeFactor':1, 'wave':1}] ,\
-#          pyatspi.ROLE_COMBO_BOX:[{'duration':0.1, 'frequence':418, 'volumeFactor':1, 'wave':0},
-#{'duration':0.1, 'frequence':460, 'volumeFactor':1, 'wave':0},
-#{'duration':0.1, 'frequence':500, 'volumeFactor':1, 'wave':0}] ,\
-#          #pyatspi.ROLE_ENTRY:[{'duration':0.1, 'frequence':420, 'volumeFactor':1, 'wave':5}] ,\
-#          pyatspi.ROLE_TEXT:[{'duration':0.1, 'frequence':420, 'volumeFactor':1, 'wave':5}] ,\
-#          }
 
         try:
-            state = obj.getState()
-            if (role in [pyatspi.ROLE_RADIO_BUTTON,pyatspi.ROLE_CHECK_BOX]) and state.contains(pyatspi.STATE_CHECKED):
+            if (soundIconName != ''): # for a named soundIcon
+                return True, soundIcons[soundIconName]
+
+            role = obj.getRole() # soundIcon for a Role
+            if (role in [pyatspi.ROLE_RADIO_BUTTON, pyatspi.ROLE_CHECK_BOX]) and\
+              obj.getState().contains(pyatspi.STATE_CHECKED):
                 return True, soundIcons[str(int(role)) + '-' + str(int(pyatspi.STATE_CHECKED))]
             return True, soundIcons[str(int(role))]
         except:

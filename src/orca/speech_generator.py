@@ -381,7 +381,7 @@ class SpeechGenerator(generator.Generator):
         - role: an optional pyatspi role to use instead
         """
         if _settingsManager.getSetting('enableSoundIcons'):
-            hasSoundIcon, ToneSequence = self.soundGenerator.getSoundIconToneSequence(obj, obj.getRole())
+            hasSoundIcon, ToneSequence = self.soundGenerator.getSoundIconToneSequence(obj)
             if hasSoundIcon:
                 self.sound.playToneSequence(ToneSequence)
                 return ''
@@ -432,7 +432,7 @@ class SpeechGenerator(generator.Generator):
         if _settingsManager.getSetting('onlySpeakDisplayedText'):
             return []
         if _settingsManager.getSetting('enableSoundIcons'):
-            hasSoundIcon, ToneSequence = self.soundGenerator.getSoundIconToneSequence(obj, obj.getRole())
+            hasSoundIcon, ToneSequence = self.soundGenerator.getSoundIconToneSequence(obj)
             if hasSoundIcon:
                 self.sound.playToneSequence(ToneSequence)
                 return []
@@ -500,7 +500,7 @@ class SpeechGenerator(generator.Generator):
         if _settingsManager.getSetting('onlySpeakDisplayedText'):
             return []
         if _settingsManager.getSetting('enableSoundIcons'):
-            hasSoundIcon = self.soundGenerator.getSoundIconToneSequence(obj, obj.getRole())
+            hasSoundIcon = self.soundGenerator.getSoundIconToneSequence(obj)
             if hasSoundIcon:
                 return []
         acss = self.voice(STATE)

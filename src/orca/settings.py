@@ -270,7 +270,9 @@ soundIcons = {
   str(int(pyatspi.ROLE_TEXT)):[{'duration':0.1, 'frequence':420, 'volumeFactor':1, 'wave':5}],
   str(int(pyatspi.ROLE_LINK)):[{'duration':0.05, 'frequence':900, 'volumeFactor':0.6, 'wave':3},
   {'duration':0.05, 'frequence':1200, 'volumeFactor':0.6, 'wave':1},
-  {'duration':0.05, 'frequence':1500, 'volumeFactor':0.6, 'wave':0}]
+  {'duration':0.05, 'frequence':1500, 'volumeFactor':0.6, 'wave':0}],
+  'MODE_FOCUS':[{'duration':2.05, 'frequence':100, 'volumeFactor':1, 'wave':0}],
+  'MODE_BROWSE':[{'duration':2.05, 'frequence':1000, 'volumeFactor':0.7, 'wave':0}]
 }
 
 # Keyboard and Echo

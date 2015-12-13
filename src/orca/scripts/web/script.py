@@ -957,10 +957,12 @@ class Script(default.Script):
                 self.utilities.setCaretContext(obj.parent, -1)
             elif parentRole == pyatspi.ROLE_MENU:
                 self.utilities.setCaretContext(obj.parent.parent, -1)
-        if _settingsManager.getSetting('enableSoundIcons'):
-            hasSoundIcon, ToneSequence = self.soundGenerator.getSoundIconToneSequence(None, 'MODE_BROWSE')
-            if hasSoundIcon:
-                self.sound.playToneSequence(ToneSequence)
+            if _settingsManager.getSetting('enableSoundIcons'):
+                hasSoundIcon, ToneSequence = self.soundGenerator.getSoundIconToneSequence(None, 'MODE_BROWSE')
+                if hasSoundIcon:
+                    self.sound.playToneSequence(ToneSequence)
+                else:
+                    self.presentMessage(messages.MODE_BROWSE)
             else:
                 self.presentMessage(messages.MODE_BROWSE)
         else:
@@ -970,6 +972,8 @@ class Script(default.Script):
                     self.sound.playToneSequence(ToneSequence)
                 else:
                     self.presentMessage(messages.MODE_FOCUS)
+            else:
+                self.presentMessage(messages.MODE_FOCUS)
         self._inFocusMode = not self._inFocusMode
         self._focusModeIsSticky = False
 

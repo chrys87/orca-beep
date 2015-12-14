@@ -1445,6 +1445,9 @@ class OrcaSetupGUI(orca_gtkbuilder.GtkBuilderWrapper):
             prefs.get("beepProgressBarUpdates", settings.beepProgressBarUpdates))
         self.get_widget("enableSoundIconsCheckButton").set_active(
             prefs.get("enableSoundIcons", settings.enableSoundIcons))
+        self.get_widget("enableSoundCheckButton").set_active(
+            prefs.get("enableSound", settings.enableSound))
+        self.get_widget("soundVolumeSpinButton").set_value(prefs.get("soundVolume", settings.soundVolume) * 100)
             
         interval = prefs["progressBarUpdateInterval"]
         self.get_widget("progressBarUpdateIntervalSpinButton").set_value(interval)
@@ -2528,6 +2531,16 @@ class OrcaSetupGUI(orca_gtkbuilder.GtkBuilderWrapper):
         """
 
         self.prefsDict["progressBarUpdateInterval"] = widget.get_value_as_int()
+        
+    def soundVolumeValueChanged(self, widget):
+        """Signal handler for the "value_changed" signal for the
+           soundVolumeSpinButton GtkSpinButton widget.
+
+        Arguments:
+        - widget: the component that generated the signal.
+        """
+
+        self.prefsDict["soundVolume"] = widget.get_value_as_int()/100
 
     def brailleFlashTimeValueChanged(self, widget):
         self.prefsDict["brailleFlashTime"] = widget.get_value_as_int() * 1000

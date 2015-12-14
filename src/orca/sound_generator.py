@@ -43,6 +43,9 @@ class SoundGenerator():
         return2 the soundsequence to play with sound.playToneSequence(returnvalue) 
         or [] ( if no soundIcon is found)
         '''
+        if not (_settingsManager.getSetting('enableSound')) then
+            return False, []
+
         soundIcons = _settingsManager.getSetting('soundIcons')
 
         try:

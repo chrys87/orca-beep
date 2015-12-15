@@ -381,8 +381,12 @@ class SpeechGenerator(generator.Generator):
         - role: an optional pyatspi role to use instead
         """
         if _settingsManager.getSetting('enableSoundIcons'):
+            try:
+                noSound = self._script._inSayAll
+            except:
+                noSound = False
             hasSoundIcon, ToneSequence = self.soundGenerator.getSoundIconToneSequence(obj)
-            if hasSoundIcon:
+            if hasSoundIcon and not noSound:
                 self.sound.playToneSequence(ToneSequence)
                 return ''
 
@@ -432,8 +436,12 @@ class SpeechGenerator(generator.Generator):
         if _settingsManager.getSetting('onlySpeakDisplayedText'):
             return []
         if _settingsManager.getSetting('enableSoundIcons'):
+            try:
+                noSound = self._script._inSayAll
+            except:
+                noSound = False
             hasSoundIcon, ToneSequence = self.soundGenerator.getSoundIconToneSequence(obj)
-            if hasSoundIcon:
+            if hasSoundIcon and not noSound:
                 self.sound.playToneSequence(ToneSequence)
                 return []
         acss = self.voice(STATE)
@@ -500,8 +508,13 @@ class SpeechGenerator(generator.Generator):
         if _settingsManager.getSetting('onlySpeakDisplayedText'):
             return []
         if _settingsManager.getSetting('enableSoundIcons'):
-            hasSoundIcon = self.soundGenerator.getSoundIconToneSequence(obj)
-            if hasSoundIcon:
+            try:
+                noSound = self._script._inSayAll
+            except:
+                noSound = False
+            hasSoundIcon, ToneSequence = self.soundGenerator.getSoundIconToneSequence(obj)
+            if hasSoundIcon and not noSound:
+                self.sound.playToneSequence(ToneSequence)
                 return []
         acss = self.voice(STATE)
         result = generator.Generator._generateRadioState(self, obj, **args)

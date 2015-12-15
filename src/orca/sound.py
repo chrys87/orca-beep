@@ -7,8 +7,10 @@ __version__   = "$Revision$"
 __date__      = "$Date$"
 __license__   = "LGPL"
 
+import os
+import os.path
+from gi.repository import GObject
 import orca.settings_manager as settings_manager
-import orca.debug as debug
 
 try:
     import gi
@@ -25,20 +27,7 @@ _settingsManager = settings_manager.getManager()
 class Sound():
 
     def __init__(self):
-        if not _gstreamerAvailable:
-            return
         Gst.init_check()
-        self.__createGstPipeline()
-
-    def __createGstPipeline(self):
-        if not _gstreamerAvailable:
-            return
-        self._pipeline = Gst.Pipeline(name='orca-pipeline')
-        self._source = Gst.ElementFactory.make('audiotestsrc', 'src')
-        self._sink = Gst.ElementFactory.make('autoaudiosink', 'output')
-        self._pipeline.add(self._source)
-        self._pipeline.add(self._sink)
-        self._source.link(self._sink)
 
     def createTone(self, duration, frequence, volumeFactor = 1, wave = 0):
         '''
@@ -74,11 +63,6 @@ class Sound():
             wave = 0
         return {'duration':duration, 'frequence':frequence, 'volumeFactor':volumeFactor, 'wave':wave}
 
-    def setSourceProperty(self,prop, value):
-        if not _gstreamerAvailable:
-            return
-        self._source.set_property(prop, value)
-
     def playTone(self, tones):
         '''
         Plays a list of tones. is a blocking call
@@ -88,15 +72,47 @@ class Sound():
             return
         if not _settingsManager.getSetting('enableSound'):
             return
+        pipeline = Gst.Pipeline()
+        source = Gst.ElementFactory.make('audiotestsrc')
+        sink = Gst.ElementFactory.make('autoaudiosink')
+        pipeline.add(source)
+        pipeline.add(sink)
+        source.link(sink)
         for tone in tones:
-            self.setSourceProperty("volume", \
+            source.set_property("volume", \
               _settingsManager.getSetting('soundVolume') * tone['volumeFactor'])
-            self.setSourceProperty("freq", tone['frequence'])
-            self.setSourceProperty("wave", tone['wave'])
-            
-            self.__startSoundGeneration()
+            source.set_property("freq", tone['frequence'])
+            source.set_property("wave", tone['wave'])
+
+            pipeline.set_state(Gst.State.PLAYING)
             time.sleep(tone['duration'])
-            self.__stopSoundGeneration()
+            pipeline.set_state(Gst.State.PAUSED)
+            pipeline.set_state(Gst.State.NULL)
+
+    def playSoundFile(self, location):
+        '''
+        Plays a Audiofile
+        '''
+        if not _gstreamerAvailable:
+            return
+        if not _settingsManager.getSetting('enableSound'):
+            return
+        if not self.isValidFile(location):
+            return
+        pipeline = Gst.Pipeline()
+        source = Gst.ElementFactory.make('playbin')
+        sink = Gst.ElementFactory.make('autoaudiosink')
+        pipeline.add(source)
+        pipeline.add(sink)
+        source.link(sink)
+        source.set_property("uri", 'file:///home/chrys/.wine/drive_c/SIERRA/Caesar3/wavs/COIN.WAV')
+        pipeline.set_state(Gst.State.PLAYING)
+        #time.sleep(1)
+        #bus = pipeline.get_bus()
+        #bus.timed_pop_filtered (Gst.CLOCK_TIME_NONE, Gst.MessageType.ERROR | Gst.MessageType.EOS);
+        #pipeline.set_state(Gst.State.PAUSED)
+        #pipeline.set_state(Gst.State.NULL)
+        
 
     def playSimpleTone(self, duration, frequence, volumeFactor = 1, wave = 0):
         '''
@@ -112,6 +128,24 @@ class Sound():
         tones.append(tone)
         self.playToneSequence(tones)
 
+    def isValidFile(self, location):
+        return (location != None) and\
+          (location != '') and\
+          os.path.exists(location) and\
+          os.path.isfile(location) and\
+          os.access(location, os.R_OK)
+
+    def playSound(self, location ):
+        '''
+        plays a list of tones
+        tones is a list of "tones" created with createTone
+        '''
+        if not _gstreamerAvailable:
+            return
+        if not self.isValidFile(location):
+            return 
+        _thread.start_new_thread( self.playSoundFile, (location,  ) )
+
     def playToneSequence(self, tones):
         '''
         plays a list of tones
@@ -119,16 +153,4 @@ class Sound():
         '''
         if not _gstreamerAvailable:
             return
-        if not _settingsManager.getSetting('enableSound'):
-            return
         _thread.start_new_thread( self.playTone, (tones,  ) )
-
-    def __startSoundGeneration(self):
-        if not _gstreamerAvailable:
-            return
-        self._pipeline.set_state(Gst.State.PLAYING)
-
-    def __stopSoundGeneration(self):
-        if not _gstreamerAvailable:
-            return
-        self._pipeline.set_state(Gst.State.NULL)

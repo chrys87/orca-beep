@@ -11,6 +11,7 @@ import os
 import os.path
 from gi.repository import GObject
 import orca.settings_manager as settings_manager
+import uuid
 
 try:
     import gi
@@ -97,22 +98,21 @@ class Sound():
             return
         if not _settingsManager.getSetting('enableSound'):
             return
+        location = location.replace('~', os.path.expanduser('~'))
         if not self.isValidFile(location):
             return
         pipeline = Gst.Pipeline()
-        source = Gst.ElementFactory.make('playbin')
-        sink = Gst.ElementFactory.make('autoaudiosink')
+        source = Gst.ElementFactory.make('playbin', str(uuid.uuid4()))
         pipeline.add(source)
-        pipeline.add(sink)
-        source.link(sink)
-        source.set_property("uri", 'file:///home/chrys/.wine/drive_c/SIERRA/Caesar3/wavs/COIN.WAV')
+        source.set_property("uri", 'file://' + location)
         pipeline.set_state(Gst.State.PLAYING)
-        #time.sleep(1)
-        #bus = pipeline.get_bus()
-        #bus.timed_pop_filtered (Gst.CLOCK_TIME_NONE, Gst.MessageType.ERROR | Gst.MessageType.EOS);
-        #pipeline.set_state(Gst.State.PAUSED)
-        #pipeline.set_state(Gst.State.NULL)
-        
+        bus = pipeline.get_bus()
+        message = None
+        while(not message or 
+          (message.type != Gst.MessageType.EOS) and  
+          (message.type != Gst.MessageType.ERROR)):
+            message = bus.poll(Gst.MessageType.ERROR|Gst.MessageType.EOS,10000)
+        pipeline.set_state(Gst.State.NULL)
 
     def playSimpleTone(self, duration, frequence, volumeFactor = 1, wave = 0):
         '''
@@ -142,6 +142,7 @@ class Sound():
         '''
         if not _gstreamerAvailable:
             return
+        location = location.replace('~', os.path.expanduser('~'))
         if not self.isValidFile(location):
             return 
         _thread.start_new_thread( self.playSoundFile, (location,  ) )

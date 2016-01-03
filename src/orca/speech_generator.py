@@ -382,12 +382,13 @@ class SpeechGenerator(generator.Generator):
         """
         if _settingsManager.getSetting('enableSoundIcons'):
             try:
-                noSound = self._script._inSayAll
+                noSound = self._script._script.inSayAll()
             except:
                 noSound = False
             hasSoundIcon, ToneSequence = self.soundGenerator.getSoundIconToneSequence(obj)
             if hasSoundIcon and not noSound:
                 self.sound.playToneSequence(ToneSequence)
+                self.sound.playSound('~/.wine/drive_c/SIERRA/Caesar3/wavs/COIN.WAV')
                 return ''
 
         if not isinstance(role, pyatspi.Role):
@@ -437,7 +438,7 @@ class SpeechGenerator(generator.Generator):
             return []
         if _settingsManager.getSetting('enableSoundIcons'):
             try:
-                noSound = self._script._inSayAll
+                noSound = self._script._script.inSayAll()
             except:
                 noSound = False
             hasSoundIcon, ToneSequence = self.soundGenerator.getSoundIconToneSequence(obj)
@@ -509,7 +510,7 @@ class SpeechGenerator(generator.Generator):
             return []
         if _settingsManager.getSetting('enableSoundIcons'):
             try:
-                noSound = self._script._inSayAll
+                noSound = self._script._script.inSayAll()
             except:
                 noSound = False
             hasSoundIcon, ToneSequence = self.soundGenerator.getSoundIconToneSequence(obj)

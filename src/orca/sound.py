@@ -29,6 +29,7 @@ class Sound():
 
     def __init__(self):
         Gst.init_check()
+        self.lock = _thread.allocate_lock()
 
     def createTone(self, duration, frequence, volumeFactor = 1, wave = 0):
         '''
@@ -73,7 +74,8 @@ class Sound():
             return
         if not _settingsManager.getSetting('enableSound'):
             return
-        pipeline = Gst.Pipeline()
+        self.lock.acquire(True)
+        pipeline = Gst.Pipeline.new(str(uuid.uuid4()))
         source = Gst.ElementFactory.make('audiotestsrc')
         sink = Gst.ElementFactory.make('autoaudiosink')
         pipeline.add(source)
@@ -87,8 +89,8 @@ class Sound():
 
             pipeline.set_state(Gst.State.PLAYING)
             time.sleep(tone['duration'])
-            pipeline.set_state(Gst.State.PAUSED)
             pipeline.set_state(Gst.State.NULL)
+        self.lock.release()
 
     def playSoundFile(self, location):
         '''
@@ -101,18 +103,25 @@ class Sound():
         location = location.replace('~', os.path.expanduser('~'))
         if not self.isValidFile(location):
             return
-        pipeline = Gst.Pipeline()
-        source = Gst.ElementFactory.make('playbin', str(uuid.uuid4()))
+        self.lock.acquire(True)
+        pipeline = Gst.Pipeline.new()
+        self.lock.release()
+        source = Gst.ElementFactory.make('playbin')
         pipeline.add(source)
         source.set_property("uri", 'file://' + location)
-        pipeline.set_state(Gst.State.PLAYING)
         bus = pipeline.get_bus()
+        pipeline.set_state(Gst.State.PLAYING)
+        self.lock.acquire(True)
         message = None
-        while(not message or 
-          (message.type != Gst.MessageType.EOS) and  
-          (message.type != Gst.MessageType.ERROR)):
-            message = bus.poll(Gst.MessageType.ERROR|Gst.MessageType.EOS,10000)
+        try:
+            while(not message or 
+              (message.type != Gst.MessageType.EOS) and  
+              (message.type != Gst.MessageType.ERROR)):
+                message = bus.pop()
+        except Exception as e: 
+            pass
         pipeline.set_state(Gst.State.NULL)
+        self.lock.release()
 
     def playSimpleTone(self, duration, frequence, volumeFactor = 1, wave = 0):
         '''
